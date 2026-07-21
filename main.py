@@ -2,8 +2,6 @@ import hashlib
 
 from mcp.server.fastmcp import FastMCP, Context
 from mcp.types import CallToolResult, TextContent
-from starlette.applications import Starlette
-from starlette.routing import Mount
 
 EMAIL = "24f2003507@ds.study.iitm.ac.in"
 
@@ -50,11 +48,6 @@ def solve_challenge(ctx: Context) -> CallToolResult:
     )
 
 
-mcp_app = mcp.streamable_http_app()
-
-app = Starlette(
-    routes=[
-        Mount("/", app=mcp_app),
-    ],
-    lifespan=mcp_app.lifespan,
-)
+# Expose the MCP ASGI application directly.
+# This serves the MCP endpoint at "/".
+app = mcp.streamable_http_app()
