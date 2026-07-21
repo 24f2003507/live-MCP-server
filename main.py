@@ -1,4 +1,3 @@
-import contextlib
 import hashlib
 
 from mcp.server.fastmcp import FastMCP, Context
@@ -51,15 +50,11 @@ def solve_challenge(ctx: Context) -> CallToolResult:
     )
 
 
-@contextlib.asynccontextmanager
-async def lifespan(app: Starlette):
-    async with mcp.session_manager.run():
-        yield
-
+mcp_app = mcp.streamable_http_app()
 
 app = Starlette(
     routes=[
-        Mount("/mcp", app=mcp.streamable_http_app())
+        Mount("/", app=mcp_app),
     ],
-    lifespan=lifespan,
+    lifespan=mcp_app.lifespan,
 )
